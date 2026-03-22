@@ -78,6 +78,21 @@ def calculate_gross_margin(revenue: float, cogs: float) -> float | None:
     return ((revenue - cogs) / revenue) * 100
 
 
+def calculate_net_profit(
+    gross_profit: float,
+    monthly_opex: float,
+    tax_rate: float,
+) -> tuple[float, float]:
+    """Calculate operating profit and net profit after OpEx and tax.
+
+    Tax applies only to positive operating profit (no negative tax benefit modelled).
+    Returns (operating_profit, net_profit).
+    """
+    operating_profit = gross_profit - monthly_opex
+    tax = max(0.0, operating_profit) * tax_rate
+    return operating_profit, operating_profit - tax
+
+
 def build_cost_volume_dataframe(
     cost_per_task_api: float,
     fixed_monthly_cost: float,
@@ -86,11 +101,13 @@ def build_cost_volume_dataframe(
     revenue_model: str = "task_based",
     seat_price: float = 0.0,
     num_seats: int = 0,
+    monthly_opex: float = 0.0,
+    tax_rate: float = 0.0,
     volume_min: int = 0,
     volume_max: int = VOLUME_RANGE_MAX,
     n_points: int = VOLUME_RANGE_STEPS,
 ) -> pd.DataFrame:
-    """Build a DataFrame with cost and revenue at each volume point for charting."""
+    """Build a DataFrame with cost, revenue, and profit at each volume point for charting."""
     volumes = np.linspace(volume_min, volume_max, n_points).astype(int)
 
     api_cost = volumes * cost_per_task_api
@@ -101,14 +118,21 @@ def build_cost_volume_dataframe(
     else:
         revenue = np.full(len(volumes), seat_price * num_seats)
 
+    api_gross_profit = revenue - api_cost
+    onprem_gross_profit = revenue - onprem_cost
+    api_operating_profit = api_gross_profit - monthly_opex
+    api_tax = np.maximum(0.0, api_operating_profit) * tax_rate
+    api_net_profit = api_operating_profit - api_tax
+
     return pd.DataFrame(
         {
             "volume": volumes,
             "api_cost": api_cost,
             "onprem_cost": onprem_cost,
             "revenue": revenue,
-            "api_gross_profit": revenue - api_cost,
-            "onprem_gross_profit": revenue - onprem_cost,
+            "api_gross_profit": api_gross_profit,
+            "onprem_gross_profit": onprem_gross_profit,
+            "api_net_profit": api_net_profit,
         }
     )
 
@@ -120,6 +144,8 @@ def build_pnl_snapshot(
     revenue: float,
     hosting_strategy: str,
     marginal_onprem: float = 0.0,
+    monthly_opex: float = 0.0,
+    tax_rate: float = 0.0,
 ) -> dict:
     """Return a P&L snapshot dict for KPI cards and the margin analysis chart."""
     if hosting_strategy == "onprem":
@@ -133,6 +159,9 @@ def build_pnl_snapshot(
 
     gross_profit = revenue - cogs
     gross_margin_pct = calculate_gross_margin(revenue, cogs)
+    operating_profit, net_profit = calculate_net_profit(gross_profit, monthly_opex, tax_rate)
+    tax_amount = max(0.0, operating_profit) * tax_rate
+    net_margin_pct = (net_profit / revenue * 100) if revenue != 0 else None
 
     return {
         "revenue": revenue,
@@ -141,4 +170,9 @@ def build_pnl_snapshot(
         "gross_margin_pct": gross_margin_pct,
         "cost_per_task": cost_per_task_api,
         "breakeven_volume": breakeven_volume,
+        "monthly_opex": monthly_opex,
+        "operating_profit": operating_profit,
+        "tax_amount": tax_amount,
+        "net_profit": net_profit,
+        "net_margin_pct": net_margin_pct,
     }
