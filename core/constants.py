@@ -10,6 +10,16 @@ MODEL_REGISTRY = {
         "output_price_per_token": 0.60 / 1_000_000,
         "provider": "OpenAI",
     },
+    "o1": {
+        "input_price_per_token": 15.00 / 1_000_000,
+        "output_price_per_token": 60.00 / 1_000_000,
+        "provider": "OpenAI",
+    },
+    "o3 mini": {
+        "input_price_per_token": 1.10 / 1_000_000,
+        "output_price_per_token": 4.40 / 1_000_000,
+        "provider": "OpenAI",
+    },
     # ── Anthropic ─────────────────────────────────────────────────────────────
     "Claude 3.5 Haiku": {
         "input_price_per_token": 0.80 / 1_000_000,
@@ -17,6 +27,11 @@ MODEL_REGISTRY = {
         "provider": "Anthropic",
     },
     "Claude 3.5 Sonnet": {
+        "input_price_per_token": 3.00 / 1_000_000,
+        "output_price_per_token": 15.00 / 1_000_000,
+        "provider": "Anthropic",
+    },
+    "Claude 3.7 Sonnet": {
         "input_price_per_token": 3.00 / 1_000_000,
         "output_price_per_token": 15.00 / 1_000_000,
         "provider": "Anthropic",
@@ -32,6 +47,11 @@ MODEL_REGISTRY = {
         "output_price_per_token": 0.40 / 1_000_000,
         "provider": "Google",
     },
+    "Gemini 1.5 Flash": {
+        "input_price_per_token": 0.075 / 1_000_000,
+        "output_price_per_token": 0.30 / 1_000_000,
+        "provider": "Google",
+    },
     "Gemini 1.5 Pro": {
         "input_price_per_token": 1.25 / 1_000_000,
         "output_price_per_token": 5.00 / 1_000_000,
@@ -42,6 +62,33 @@ MODEL_REGISTRY = {
         "input_price_per_token": 0.18 / 1_000_000,
         "output_price_per_token": 0.18 / 1_000_000,
         "provider": "Meta / Together AI",
+    },
+    "Llama 3.1 405B (API)": {
+        "input_price_per_token": 3.00 / 1_000_000,
+        "output_price_per_token": 3.00 / 1_000_000,
+        "provider": "Meta / Together AI",
+    },
+    # ── Mistral ───────────────────────────────────────────────────────────────
+    "Mistral Small": {
+        "input_price_per_token": 0.10 / 1_000_000,
+        "output_price_per_token": 0.30 / 1_000_000,
+        "provider": "Mistral AI",
+    },
+    "Mistral Large": {
+        "input_price_per_token": 2.00 / 1_000_000,
+        "output_price_per_token": 6.00 / 1_000_000,
+        "provider": "Mistral AI",
+    },
+    # ── DeepSeek ──────────────────────────────────────────────────────────────
+    "DeepSeek V3": {
+        "input_price_per_token": 0.27 / 1_000_000,
+        "output_price_per_token": 1.10 / 1_000_000,
+        "provider": "DeepSeek",
+    },
+    "DeepSeek R1": {
+        "input_price_per_token": 0.55 / 1_000_000,
+        "output_price_per_token": 2.19 / 1_000_000,
+        "provider": "DeepSeek",
     },
 }
 
